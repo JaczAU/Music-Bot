@@ -51,14 +51,33 @@ client.on('message', async msg => { // eslint-disable-line
 				var video = await youtube.getVideo(url);
 			} catch (error) {
 				try {
-					var videos = await youtube.searchVideos(searchString, 1);
-					var video = await youtube.getVideoByID(videos[0].id);
+					var videos = await youtube.searchVideos(searchString, 10);
+					let index = 0;
+					msg.channel.send(`
+__**Song selection:**__
+
+${videos.map(video2 => `**${++index} -** ${video2.title}`).join('\n')}
+
+Please provide a value to select one of the search results ranging from 1-10.
+					`);
+					// eslint-disable-next-line max-depth
+					try {
+						var response = await msg.channel.awaitMessages(msg2 => msg2.content > 0 && msg2.content < 11, {
+							maxMatches: 1,
+							time: 10000,
+							errors: ['time']
+						});
+					} catch (err) {
+						console.error(err);
+						return msg.channel.send('No or invalid value entered, cancelling video selection.');
+					}
+					const videoIndex = parseInt(response.first().content);
+					var video = await youtube.getVideoByID(videos[videoIndex - 1].id);
 				} catch (err) {
 					console.error(err);
 					return msg.channel.send('I could not obtain any search results.');
 				}
 			}
-
 			return handleVideo(video, msg, voiceChannel);
 		}
 	} else if (msg.content.startsWith(`${PREFIX}skip`)) {
