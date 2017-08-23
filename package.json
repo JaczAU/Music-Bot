@@ -16,6 +16,7 @@
   "dependencies": {
     "discord.js": "^11.1.0",
     "opusscript": "0.0.3",
+    "simple-youtube-api": "^3.0.0",
     "ytdl-core": "^0.16.0"
   },
   "devDependencies": {
